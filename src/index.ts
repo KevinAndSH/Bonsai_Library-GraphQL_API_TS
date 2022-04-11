@@ -1,10 +1,10 @@
 import "reflect-metadata"
-
 import { ApolloServer } from "apollo-server"
 import { buildSchema } from "type-graphql"
 import mongoose from "mongoose"
 
-import { AuthorResolver } from "./schema/schema"
+import { AuthorResolver } from "./schema/authors/author.resolvers"
+
 
 mongoose.connect(process.env.DB_URI, () => console.log("Connected to the database"))
 

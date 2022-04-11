@@ -1,5 +1,6 @@
 import "reflect-metadata"
 import { ApolloServer } from "apollo-server"
+import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core"
 import { buildSchema } from "type-graphql"
 import mongoose from "mongoose"
 
@@ -15,7 +16,9 @@ async function bootstrap() {
     resolvers: [AuthorResolver, BookResolver, PublisherResolver]
   })
 
-  const server = new ApolloServer({ schema })
+  const plugins = [ApolloServerPluginLandingPageGraphQLPlayground()]
+
+  const server = new ApolloServer({ schema, plugins })
 
   server.listen().then(({ url }) => console.log(`GraphQL server running at ${url}`))
 }

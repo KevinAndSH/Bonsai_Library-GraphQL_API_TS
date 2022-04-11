@@ -1,7 +1,8 @@
-import { Arg, Args, FieldResolver, ID, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { Author, AuthorModel } from "../authors/author.model";
 import { Publisher, PublisherModel } from "../publishers/publisher.model";
 import { BookFilter, GetBooksArgs } from "./book.args";
+import { RegisterBookInput, UpdateBookInput } from "./book.inputs";
 import { Book, BookModel } from "./book.model";
 
 @Resolver(of => Book)
@@ -30,6 +31,34 @@ export class BookResolver {
       .sort([[orderBy, orderType]])
       .limit(entriesToShow)
       .skip(entriesToSkip)
+  }
+
+  @Mutation()
+  async registerBook(@Arg("newBookData") newBookData: RegisterBookInput) {
+    const newBook = new BookModel(newBookData)
+    return await newBook.save().catch(console.error)
+  }
+
+  @Mutation()
+  async updateBook(@Arg("bookData") bookData: UpdateBookInput) {
+    const bookToEdit = BookModel.findById(bookData.id)
+    for (const key in bookData) {
+      if (key === "id") continue
+      if (!bookData[key]) continue
+      bookToEdit[key] = bookData[key]
+    }
+    return await bookToEdit.save().catch(console.error)
+  }
+
+  @Mutation()
+  async deleteBookById(@Arg("id", type => ID) id: string) {
+    try {
+      BookModel.deleteOne({ _id: id })
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
   }
 
   @FieldResolver()

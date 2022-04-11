@@ -20,6 +20,7 @@
   "dependencies": {
     "@typegoose/typegoose": "^9.7.1",
     "apollo-server": "^3.6.7",
+    "apollo-server-core": "^3.6.7",
     "bcryptjs": "^2.4.3",
     "class-validator": "^0.13.2",
     "dataloader": "^2.0.0",

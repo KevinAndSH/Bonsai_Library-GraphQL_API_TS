@@ -1,4 +1,4 @@
-import { Arg, Args, FieldResolver, ID, Query, Resolver, Root } from "type-graphql"
+import { Arg, Args, ID, Query, Resolver } from "type-graphql"
 import { PaginationArgs } from "../arg-types/paginationArgs"
 import { Author, AuthorModel } from "./author.model"
 
@@ -19,9 +19,4 @@ export class AuthorResolver {
       .limit(entriesToShow)
       .skip(entriesToSkip)
   }
-
-  // @FieldResolver()
-  // fullName(@Root() { firstName, lastName }: Author): string {
-  //   return [firstName, lastName].join(" ").trim()
-  // }
 }

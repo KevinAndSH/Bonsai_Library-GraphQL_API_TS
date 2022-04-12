@@ -33,31 +33,27 @@ export class BookResolver {
       .skip(entriesToSkip)
   }
 
-  @Mutation()
-  async registerBook(@Arg("newBookData") newBookData: RegisterBookInput) {
+  @Mutation(returns => Book)
+  async registerBook(@Arg("newBookData") newBookData: RegisterBookInput): Promise<Book> {
     const newBook = new BookModel(newBookData)
-    return await newBook.save().catch(console.error)
+    return await newBook.save().catch(err => { throw err })
   }
 
-  @Mutation()
-  async updateBook(@Arg("bookData") bookData: UpdateBookInput) {
-    const bookToEdit = BookModel.findById(bookData.id)
-    for (const key in bookData) {
-      if (key === "id") continue
-      if (!bookData[key]) continue
-      bookToEdit[key] = bookData[key]
-    }
-    return await bookToEdit.save().catch(console.error)
+  @Mutation(returns => Book)
+  async updateBook(@Arg("bookData") bookData: UpdateBookInput): Promise<Book> {
+    const id = bookData.id
+    bookData.id = undefined
+    return await BookModel.findByIdAndUpdate(id, bookData, { returnOriginal: false })
   }
 
-  @Mutation()
-  async deleteBookById(@Arg("id", type => ID) id: string) {
+  @Mutation(returns => Boolean)
+  async deleteBookById(@Arg("id", type => ID) id: string): Promise<Boolean> {
     try {
-      BookModel.deleteOne({ _id: id })
+      await BookModel.findByIdAndDelete(id)
       return true
     } catch (error) {
       console.error(error)
-      return false
+      throw error
     }
   }
 

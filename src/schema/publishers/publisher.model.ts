@@ -8,7 +8,7 @@ export class Publisher {
   @Field(type => ID, { description: "Unique identifier in the database" })
   id: string
 
-  @prop({ required: true, trim: true })
+  @prop({ required: true, trim: true, unique: true })
   @Field({ description: "Name of the publisher" })
   name: string
 

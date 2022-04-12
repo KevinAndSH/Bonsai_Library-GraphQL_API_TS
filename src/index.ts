@@ -9,7 +9,7 @@ import { BookResolver } from "./schema/books/book.resolvers"
 import { PublisherResolver } from "./schema/publishers/publisher.resolvers"
 import { UserResolver } from "./schema/users/user.resolvers"
 import context from "./context"
-import { customAuthChecker } from "./schema/authChecker"
+import { customAuthChecker } from "./authChecker"
 
 mongoose.set('debug', true)
 mongoose.connect(process.env.DB_URI, () => console.log("Connected to the database"))

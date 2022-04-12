@@ -33,9 +33,9 @@ export class UserResolver {
 
   @Authorized(UserRole.VIEWER, UserRole.EDITOR)
   @Mutation(returns => AuthPayload)
-  async askForEditorRole(@Ctx() { getUserDataFromReq }: MyContext): Promise<AuthPayload> {
+  async askForEditorRole(@Ctx() { getUserDataFromReq, req }: MyContext): Promise<AuthPayload> {
     try {
-      const userData = getUserDataFromReq()
+      const userData = getUserDataFromReq(req)
       if (userData.role === UserRole.EDITOR) throw Error("User already has the editor role")
       const userToEdit = await UserModel.findOne({ email: userData.email })
       userToEdit.role = UserRole.EDITOR

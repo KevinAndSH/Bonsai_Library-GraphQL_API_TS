@@ -1,5 +1,9 @@
-import { Arg, Args, Authorized, ID, Query, Resolver } from "type-graphql"
+import DataLoader from "dataloader"
+import { Arg, Args, Authorized, FieldResolver, ID, Query, Resolver, Root } from "type-graphql"
+import { Loader } from "type-graphql-dataloader"
 import { PaginationArgs } from "../arg-types/paginationArgs"
+import { Book } from "../books/book.model"
+import { bookLoader } from "../dataloaders"
 import { UserRole } from "../users/user.model"
 import { Author, AuthorModel } from "./author.model"
 
@@ -21,5 +25,13 @@ export class AuthorResolver {
       .find()
       .limit(entriesToShow)
       .skip(entriesToSkip)
+  }
+
+  @FieldResolver()
+  @Loader(bookLoader)
+  books(@Root() author: Author) {
+    return (dataloader: DataLoader<any, Book[]>) => {
+      dataloader.loadMany([...author.bookIDs])
+    }
   }
 }

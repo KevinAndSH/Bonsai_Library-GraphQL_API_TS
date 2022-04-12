@@ -16,14 +16,9 @@ export class Author {
   @Field({ nullable: true, description: "Author's last name" })
   lastName: string
 
-  // @Field({ description: "Author's full name" })
-  // fullName(@Root() author: Author): string {
-  //   return `${author.firstName} ${author.lastName}`.trim()
-  // }
-
   @Field({ description: "Author's full name" })
-  get fullName(): string {
-    return `${this.firstName} ${this.lastName}`.trim()
+  fullName(@Root() author: Author): string {
+    return `${author.firstName} ${author.lastName}`.trim()
   }
 
   @prop({ trim: true })

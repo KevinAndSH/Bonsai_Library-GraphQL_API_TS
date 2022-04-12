@@ -3,7 +3,7 @@ import { Field, InputType } from "type-graphql";
 import { User } from "./user.model";
 
 @InputType()
-export class UserInput implements Partial<User> {
+export class UserLoginInput implements Partial<User> {
   @Field()
   @IsEmail()
   email: string
@@ -14,10 +14,18 @@ export class UserInput implements Partial<User> {
 }
 
 @InputType()
-export class UserRegisterInput extends UserInput {
+export class UserRegisterInput implements Partial<User> {
   @Field()
   @MinLength(1)
   username: string
+
+  @Field()
+  @IsEmail()
+  email: string
+
+  @Field()
+  @MinLength(8)
+  password: string
 
   @Field()
   passwordConfirm: string

@@ -24,7 +24,7 @@ export class GetBooksArgs extends PaginationArgs {
 
 export interface BookFilter {
   publicationYear?: number
-  title?: string | RegExp
+  title?: string|RegExp
   authorIDs?: { $in: string[] }
   publisherID?: string
   orderBy?: SortCriteria

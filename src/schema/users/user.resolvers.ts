@@ -1,3 +1,4 @@
+import { ApolloError } from "apollo-server";
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import { Arg, Authorized, Ctx, Field, Mutation, ObjectType, Resolver } from "type-graphql";
@@ -11,7 +12,7 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET
 export class UserResolver {
   @Mutation(returns => User)
   async signup(@Arg("userData") { username, email, password, passwordConfirm }: UserRegisterInput): Promise<User> {
-    if (password !== passwordConfirm) throw Error("Passwords don't match")
+    if (password !== passwordConfirm) throw new ApolloError("Passwords don't match")
     const newUser = new UserModel({
       username,
       email,
@@ -24,8 +25,8 @@ export class UserResolver {
   @Mutation(returns => AuthPayload)
   async login(@Arg("loginData") { email, password }: UserLoginInput): Promise<AuthPayload> {
     const userData = await UserModel.findOne({ email })
-    if (!userData?.email) throw Error("E-mail address not registered")
-    if (!bcrypt.compareSync(password, userData.hashedPassword)) throw Error("Wrong password")
+    if (!userData?.email) throw new ApolloError("E-mail address not registered")
+    if (!bcrypt.compareSync(password, userData.hashedPassword)) throw new ApolloError("Wrong password")
     const token = jwt.sign({ email, role: userData.role }, ACCESS_TOKEN_SECRET)
     
     return { token }
@@ -36,7 +37,7 @@ export class UserResolver {
   async askForEditorRole(@Ctx() { getUserDataFromReq, req }: MyContext): Promise<AuthPayload> {
     try {
       const userData = getUserDataFromReq(req)
-      if (userData.role === UserRole.EDITOR) throw Error("User already has the editor role")
+      if (userData.role === UserRole.EDITOR) throw new ApolloError("User already has the editor role")
       const userToEdit = await UserModel.findOne({ email: userData.email })
       userToEdit.role = UserRole.EDITOR
       await userToEdit.save()

@@ -1,9 +1,7 @@
-import DataLoader from "dataloader";
+import { DocumentType } from "@typegoose/typegoose";
 import { Arg, Args, FieldResolver, ID, Query, Resolver, Root } from "type-graphql";
-import { Loader } from "type-graphql-dataloader";
 import { PaginationArgs } from "../arg-types/paginationArgs";
-import { Book } from "../books/book.model";
-import { bookLoader } from "../dataloaders";
+import { Book, BookModel } from "../books/book.model";
 import { Publisher, PublisherModel } from "./publisher.model";
 
 @Resolver(of => Publisher)
@@ -25,10 +23,8 @@ export class PublisherResolver {
   }
 
   @FieldResolver()
-  @Loader(bookLoader)
-  books(@Root() publisher: Publisher) {
-    return (dataloader: DataLoader<any, Book[]>) => {
-      dataloader.loadMany([...publisher.bookIDs])
-    }
+  async books(@Root() publisherDoc: DocumentType<Publisher>): Promise<Book[]> {
+    const { bookIDs }: Publisher = publisherDoc.toObject()
+    return await BookModel.where("_id").in([...bookIDs])
   }
 }

@@ -1,9 +1,7 @@
-import DataLoader from "dataloader"
+import { DocumentType } from "@typegoose/typegoose"
 import { Arg, Args, Authorized, FieldResolver, ID, Query, Resolver, Root } from "type-graphql"
-import { Loader } from "type-graphql-dataloader"
 import { PaginationArgs } from "../arg-types/paginationArgs"
-import { Book } from "../books/book.model"
-import { bookLoader } from "../dataloaders"
+import { Book, BookModel } from "../books/book.model"
 import { UserRole } from "../users/user.model"
 import { Author, AuthorModel } from "./author.model"
 
@@ -28,10 +26,8 @@ export class AuthorResolver {
   }
 
   @FieldResolver()
-  @Loader(bookLoader)
-  books(@Root() author: Author) {
-    return (dataloader: DataLoader<any, Book[]>) => {
-      dataloader.loadMany([...author.bookIDs])
-    }
+  async books(@Root() authorDoc: DocumentType<Author>): Promise<Book[]> {
+    const { bookIDs }: Author = authorDoc.toObject()
+    return await BookModel.where("_id").in([...bookIDs])
   }
 }

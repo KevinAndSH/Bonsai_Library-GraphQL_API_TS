@@ -11,20 +11,27 @@ import { UserResolver } from "./schema/users/user.resolvers"
 import context from "./context"
 import { customAuthChecker } from "./authChecker"
 
-mongoose.set('debug', true)
+mongoose.set('debug', process.env.NODE_ENV === "development")
 mongoose.connect(process.env.DB_URI, () => console.log("Connected to the database"))
 
-async function bootstrap() {
+;(async function() {
   const schema = await buildSchema({
-    resolvers: [AuthorResolver, BookResolver, PublisherResolver, UserResolver],
-    authChecker: customAuthChecker
+    authChecker: customAuthChecker,
+    resolvers: [
+      AuthorResolver,
+      BookResolver,
+      PublisherResolver,
+      UserResolver
+    ]
   })
 
-  const plugins = [ApolloServerPluginLandingPageGraphQLPlayground()]
+  const server = new ApolloServer({
+    schema, context,
+    plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
+    introspection: true
+  })
 
-  const server = new ApolloServer({ schema, plugins, context })
+  const port = process.env.PORT
 
-  server.listen().then(({ url }) => console.log(`GraphQL server running at ${url}`))
-}
-
-bootstrap()
+  server.listen({ port }).then(({ url }) => console.log(`GraphQL server running at ${url}`))
+})()

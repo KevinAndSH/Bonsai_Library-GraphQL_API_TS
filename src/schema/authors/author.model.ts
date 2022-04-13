@@ -1,5 +1,5 @@
 import mongoose from "mongoose"
-import { getModelForClass, prop } from "@typegoose/typegoose"
+import { DocumentType, getModelForClass, prop } from "@typegoose/typegoose"
 import { Field, ID, ObjectType, Root } from "type-graphql"
 import { Book } from "../books/book.model"
 
@@ -17,8 +17,9 @@ export class Author {
   lastName: string
 
   @Field({ description: "Author's full name" })
-  fullName(@Root() author: Author): string {
-    return `${author.firstName} ${author.lastName}`.trim()
+  fullName(@Root() authorDoc: DocumentType<Author>): string {
+    const { firstName, lastName }: Author = authorDoc.toObject()
+    return `${firstName ?? ""} ${lastName ?? ""}`.trim()
   }
 
   @prop({ trim: true })

@@ -1,5 +1,6 @@
 import { DocumentType } from "@typegoose/typegoose";
-import { Arg, Args, FieldResolver, ID, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Ctx, FieldResolver, ID, Query, Resolver, Root } from "type-graphql";
+import { MyContext } from "../../context";
 import { PaginationArgs } from "../arg-types/paginationArgs";
 import { Book, BookModel } from "../books/book.model";
 import { Publisher, PublisherModel } from "./publisher.model";
@@ -23,8 +24,12 @@ export class PublisherResolver {
   }
 
   @FieldResolver()
-  async books(@Root() publisherDoc: DocumentType<Publisher>): Promise<Book[]> {
+  async books(
+    @Root() publisherDoc: DocumentType<Publisher>,
+    @Ctx() { dataloaderFactory }: MyContext
+  ): Promise<Book[]> {
     const { bookIDs }: Publisher = publisherDoc.toObject()
-    return await BookModel.where("_id").in([...bookIDs])
+    const bookLoader = dataloaderFactory.mongooseLoader(BookModel).dataloader("_id")
+    return await bookLoader.loadMany([...bookIDs])
   }
 }

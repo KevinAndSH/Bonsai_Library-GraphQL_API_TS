@@ -1,5 +1,6 @@
 import { DocumentType } from "@typegoose/typegoose";
-import { Arg, Args, Authorized, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
+import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
+import { MyContext } from "../../context";
 import { Author, AuthorModel } from "../authors/author.model";
 import { Publisher, PublisherModel } from "../publishers/publisher.model";
 import { UserRole } from "../users/user.model";
@@ -63,14 +64,22 @@ export class BookResolver {
   }
 
   @FieldResolver()
-  async publisher(@Root() bookDoc: DocumentType<Book>): Promise<Publisher> {
+  async publisher(
+    @Root() bookDoc: DocumentType<Book>,
+    @Ctx() { dataloaderFactory }: MyContext
+  ): Promise<Publisher> {
     const { publisherID }: Book = bookDoc.toObject()
-    return await PublisherModel.findById(publisherID)
+    const publisherLoader = dataloaderFactory.mongooseLoader(PublisherModel).dataloader("_id")
+    return await publisherLoader.load(publisherID)
   }
 
   @FieldResolver()
-  async authors(@Root() bookDoc: DocumentType<Book>): Promise<Author[]> {
+  async authors(
+    @Root() bookDoc: DocumentType<Book>,
+    @Ctx() { dataloaderFactory }: MyContext
+  ): Promise<Author[]> {
     const { authorIDs }: Book = bookDoc.toObject()
-    return await AuthorModel.where("_id").in([...authorIDs])
+    const authorLoader = dataloaderFactory.mongooseLoader(AuthorModel).dataloader("_id")
+    return await authorLoader.loadMany([...authorIDs])
   }
 }

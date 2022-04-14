@@ -1,8 +1,8 @@
 import { DocumentType } from "@typegoose/typegoose";
 import { Arg, Args, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from "type-graphql";
 import { MyContext } from "../../context";
-import { Author, AuthorModel } from "../authors/author.model";
-import { Publisher, PublisherModel } from "../publishers/publisher.model";
+import { Author } from "../authors/author.model";
+import { Publisher } from "../publishers/publisher.model";
 import { UserRole } from "../users/user.model";
 import { BookFilter, GetBooksArgs } from "./book.args";
 import { RegisterBookInput, UpdateBookInput } from "./book.inputs";
@@ -66,20 +66,31 @@ export class BookResolver {
   @FieldResolver()
   async publisher(
     @Root() bookDoc: DocumentType<Book>,
-    @Ctx() { dataloaderFactory }: MyContext
-  ): Promise<Publisher> {
-    const { publisherID }: Book = bookDoc.toObject()
-    const publisherLoader = dataloaderFactory.mongooseLoader(PublisherModel).dataloader("_id")
-    return await publisherLoader.load(publisherID)
+    @Ctx() { dataLoaders }: MyContext
+  ): Promise<Publisher|Error> {
+    try {
+      const { publisherID }: Book = bookDoc.toObject()
+      const { publisherLoader } = dataLoaders
+      return await publisherLoader.load(publisherID)
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
+  @Authorized(UserRole.VIEWER, UserRole.EDITOR)
   @FieldResolver()
   async authors(
     @Root() bookDoc: DocumentType<Book>,
-    @Ctx() { dataloaderFactory }: MyContext
-  ): Promise<Author[]> {
-    const { authorIDs }: Book = bookDoc.toObject()
-    const authorLoader = dataloaderFactory.mongooseLoader(AuthorModel).dataloader("_id")
-    return await authorLoader.loadMany([...authorIDs])
+    @Ctx() { dataLoaders }: MyContext
+  ): Promise<(Author|Error)[]> {
+    try {
+      const { authorIDs }: Book = bookDoc.toObject()
+      const { authorLoader } = dataLoaders
+      return await authorLoader.loadMany([...authorIDs])
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 }

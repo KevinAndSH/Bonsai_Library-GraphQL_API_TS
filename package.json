@@ -1,6 +1,6 @@
 {
   "name": "bonsai-ts",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "dataloader": "^2.1.0",
     "graphql": "^15.8.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.10",
+    "mongoose": "^6.3.0",
     "reflect-metadata": "^0.1.13",
     "type-graphql": "^1.1.1"
   }

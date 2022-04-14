@@ -13,7 +13,7 @@ export class Book {
   @Field({ description: "Name of the book" })
   title: string
   
-  @prop({ required: true, trim: true, unique: true })
+  @prop({ required: true, trim: true })
   @Field({ description: "International Standard Book Number" })
   isbn: string
   

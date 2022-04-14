@@ -3,11 +3,11 @@ import { Field, ObjectType, registerEnumType } from "type-graphql"
 
 @ObjectType({ description: "A registered user of our service" })
 export class User {
-  @prop({ trim: true, required: true, unique: true })
+  @prop({ trim: true, required: true })
   @Field()
   username: string
 
-  @prop({ trim: true, required: true, unique: true })
+  @prop({ trim: true, required: true })
   @Field()
   email: string
 

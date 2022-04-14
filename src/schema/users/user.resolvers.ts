@@ -38,9 +38,7 @@ export class UserResolver {
     try {
       const userData = getUserDataFromReq(req)
       if (userData.role === UserRole.EDITOR) throw new ApolloError("User already has the editor role")
-      const userToEdit = await UserModel.findOne({ email: userData.email })
-      userToEdit.role = UserRole.EDITOR
-      await userToEdit.save()
+      await UserModel.updateOne({ email: userData.email }, { role: UserRole.EDITOR })
       const token = jwt.sign({ ...userData, role: UserRole.EDITOR }, ACCESS_TOKEN_SECRET)
       return { token }
     } catch (error) {

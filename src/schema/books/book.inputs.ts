@@ -30,9 +30,6 @@ export class RegisterBookInput implements Partial<Book> {
 
 @InputType()
 export class UpdateBookInput implements Partial<Book> {
-  @Field(type => ID)
-  id: string
-
   @Field({ nullable: true })
   title: string
 

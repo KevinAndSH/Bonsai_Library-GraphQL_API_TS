@@ -1,5 +1,7 @@
 # Bonsai Library - GraphQL API (TypeScript)
 
+(Check it out [here](https://bonsai-library-api-ts.herokuapp.com)!)
+
 GraphQL API made with [Apollo Server](https://www.apollographql.com/docs/apollo-server/), connected to a [MongoDB](https://www.mongodb.com) database, storing data for `books`, `authors` and `publishers`.
 
 Users can freely retrieve information about `books` and `publishers`, and also register with `username`, `email`, `password` and `passwordConfirm` (password is hashed with [`bcryptjs`](https://github.com/dcodeIO/bcrypt.js) before being stored in the database), and login with email and password; doing so will return an authentication `token` provided with [`jsonwebtoken`](https://github.com/auth0/node-jsonwebtoken).

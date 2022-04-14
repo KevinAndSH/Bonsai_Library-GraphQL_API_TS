@@ -3,15 +3,10 @@ import { Author, AuthorModel } from "./authors/author.model"
 import { Book, BookModel } from "./books/book.model"
 import { Publisher, PublisherModel } from "./publishers/publisher.model"
 
-// const groupAndSortById = (items, ids) => {
-//   const itemsById = groupBy(items, "_id")
-//   return ids.map(id => itemsById[id] || Error("Not found :("))
-// }
-
 const groupAndSortById = (items, ids: string[]) => {
-  const orderedItems = {}
-  items.forEach(item => orderedItems[item.id] = item)
-  return ids.map(id => orderedItems[id])
+  const mappedItems = {}
+  items.forEach(item => mappedItems[item.id] = item)
+  return ids.map(id => mappedItems[id])
 }
 
 const getBooksByIDs = async (bookIDs: string[]): Promise<Book[]> => {
